@@ -1,6 +1,7 @@
 //{app}\app.js
 import Controller from './lib/controller/Controller.js'
-import Mongodb from  './lib/Mongodb.js'
+import Mongodb from  './service/Mongodb.js'
+import WebApi from './service/WebApi.js'
 
 console.log("middleware Start!");
 
@@ -45,10 +46,8 @@ const ioT = new Controller(({
 scanner.ReadStart();
 ioT.ReadStart();
 
-const mongoDB = setInterval(() => {
-    ioT.tags.forEach((tag)=>{
-        Mongodb.session.InsertOne(tag.tagName, `LastDttm:${tag.LastDttm}, data:${tag.Data}`);
-    })
-}, 1000);
+Mongodb.session.Init("mongodb://127.0.0.1:8288", ioT.tags);
+Mongodb.session.Start();
 
-let mongo = new Mongodb();
+WebApi.server.Init(8080, '/middleware', ioT.tags);
+WebApi.server.Start();
