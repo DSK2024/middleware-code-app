@@ -7,7 +7,7 @@
 더 자세히 알고 싶다면 미들웨어를 소개하는 [글](https://yozm.wishket.com/magazine/detail/2606/)을 읽어볼 것을 권한다.
 
 ## 디렉터리 구조
-```
+```text
 middleware-code-app/ # 작업 영역 root
 │ app.js             # 애플리케이션 메인 실행 코드
 ├─── lib\            # 라이브러리 폴더 영역
@@ -21,7 +21,7 @@ middleware-code-app/ # 작업 영역 root
 
 1) 통신 드라이버
 * 드라이버란 하드웨어와 애플리케이션을 이어주는 매개체를 의미한다. 우선 인터페이스를 위해 IDriver 클래스를 만들고 메소드를 접속(Open), 접속 끊기(Close), 수신(Receive), 발신(Send)으로 나누었다. 모든 수신과 발신을 상속할 클래스들이 비동기로 구현되도록 async로 정의해 두자.
-```
+```javascript
 //{app}\lib\driver\IDriver.js
 export default class IDriver{
     Open(){}
@@ -32,7 +32,7 @@ export default class IDriver{
 ```
 2) 태그
 * 태그는 내가 인터페이스하려는 데이터를 태깅하는 작업이다. 예를 들어, RFID 리더기가 읽은 데이터가 팔레트의 ID 값이라고 하자. 우리가 수신한 데이터 자체에는 팔레트 ID라는 정보가 전혀 없다. 따라서 여기에서 의미를 주는 요소를 따로 태깅하는 것이다.
-```
+```javascript
 //{app}\lib\tag\Tag.js
 export default class Tag{
     #currentVal = "";
@@ -49,7 +49,7 @@ export default class Tag{
 ```
 3) 컨트롤러
 * 컨트롤러는 통신 드라이버와 태그 모두를 멤버로 갖고 이들을 제어하는 역할이다.
-```
+```javascript
 //{app}\lib\controller\Controller.js
 import Tcp from '../driver/Tcp.js';
 import Tag from '../tag/Tag.js';
@@ -93,7 +93,7 @@ export default class Controller{
 ```
 4) 웹 API
 * 웹 API는 싱글턴 패턴으로 구현해 하나의 서버에서만 처리되도록 한다.
-```
+```javascript
 //{app}\service\WebApi.js
 import Http from 'http'
 export default class WebApi{
@@ -126,7 +126,7 @@ export default class WebApi{
 ```
 5) 미들웨어 실행
 * 이제 이들을 실행해 주는 코드 app.js를 보자. 이 코드에는 IoT 장비를 연결하기 위한 정보가 포함된다. 그 하위에는 각 데이터를 태깅하며 정의한 데이터가 들어 있다.
-```
+```javascript
 //{app}\app.js
 import Controller from './lib/controller/Controller.js'
 const ioT = new Controller(({
